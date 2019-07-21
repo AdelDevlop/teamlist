@@ -68,7 +68,19 @@ class Index extends Component {
         }
       ]
     }
+
+    this.handleDeleteCollaborater  = this.handleDeleteCollaborater.bind(this);
   }
+  handleDeleteCollaborater(id) {
+    let cpy = this.state.contributors.filter(c => {
+      return c.id !== id
+    });
+
+    this.setState({
+      contributors: cpy
+    });
+  }
+
   render () {
     return ( 
       <div className="container">
@@ -83,6 +95,7 @@ class Index extends Component {
         <div className="container-fluid mt-2">
           <TeamList
             contributors={this.state.contributors}
+            handleDeleteCollaborater={this.handleDeleteCollaborater}
           />
         </div>
       </div>
@@ -110,6 +123,11 @@ class TeamList extends Component {
                           <p className="card-text text-muted">
                             { collaborater.profession }
                           </p>
+                          <button
+                            onClick={() => {
+                              this.props.handleDeleteCollaborater( collaborater.id )
+                            }}
+                           className="btn-sm btn-danger">Delete</button>
                         </div>
                       </div>
                   </div>
