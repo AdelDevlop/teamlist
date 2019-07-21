@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
+import Firebase from "firebase";
+import config from "./config";
+
 class Index extends Component {
   constructor(){
     super();
+    Firebase.initializeApp(config);
     this.state = {
       contributors : [
         {
@@ -82,6 +86,35 @@ class Index extends Component {
     this.handleAddContClick = this.handleAddContClick.bind(this);
     this.handleReorderList = this.handleReorderList.bind(this);
   }
+
+  componentDidMount() {
+    this.getUserData();
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState !== this.state) {
+      this.writeUserData();
+    }
+  }
+
+  /*
+    Firebase functions ...
+  */
+  writeUserData = () => {
+    Firebase.database()
+      .ref("/")
+      .set(this.state);
+  };
+
+  getUserData = () => {
+    let ref = Firebase.database().ref("/");
+    ref.on("value", snapshot => {
+      const state = snapshot.val();
+      this.setState(state);
+    });
+  };
+  /*
+    End of Firebase functions
+  */
 
   handleReorderList() {
     let _ = [].concat(this.state.contributors);
