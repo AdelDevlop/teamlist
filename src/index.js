@@ -80,6 +80,19 @@ class Index extends Component {
     this.handleProfessionChange = this.handleProfessionChange.bind(this);
     this.handleImageChange = this.handleImageChange.bind(this);
     this.handleAddContClick = this.handleAddContClick.bind(this);
+    this.handleReorderList = this.handleReorderList.bind(this);
+  }
+
+  handleReorderList() {
+    let _ = [].concat(this.state.contributors);
+    _.sort((x, y) => {
+      if (x.name > y.name) return 1;
+      if (x.name < y.name) return -1;
+      return 0;
+    });
+    this.setState({
+      contributors: _
+    });
   }
 
   handleNameChange(e){
@@ -165,6 +178,12 @@ class Index extends Component {
         <div className="container-fluid pt-3">
           <h1 className="lead text-info">WeLoveDevs.com</h1>
           <p className=" pb-4 small text-muted">Meet the team</p>
+
+          <div className="container text-center">
+            <button
+              onClick={this.handleReorderList}
+             className="btn-sm btn-dark">Reorder the team list</button>
+          </div>
 
           <AddForm
             newName={this.state.newName}
