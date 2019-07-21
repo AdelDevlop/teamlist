@@ -66,11 +66,89 @@ class Index extends Component {
           profession : "Customer success",
           avatar : "alexandre.png"
         }
+      ],
+      newName: '',
+      newProfession: '',
+      newImage: '',
+      formSubmitted: false,
+      errors: [
       ]
     }
 
     this.handleDeleteCollaborater  = this.handleDeleteCollaborater.bind(this);
+    this.handleNameChange = this.handleNameChange.bind(this);
+    this.handleProfessionChange = this.handleProfessionChange.bind(this);
+    this.handleImageChange = this.handleImageChange.bind(this);
+    this.handleAddContClick = this.handleAddContClick.bind(this);
   }
+
+  handleNameChange(e){
+    this.setState({
+      newName: e.target.value
+    });
+  }
+  handleProfessionChange(e) {
+    this.setState({
+      newProfession: e.target.value
+    });
+  }
+  handleImageChange(e){
+    this.setState({
+      newImage: e.target.value
+    });
+  }
+  handleAddContClick(e){
+    e.preventDefault();
+    let n = 0;
+    if ( this.state.newName.length < 2 ||  this.state.newName.length > 25) {
+      let _ = [...this.state.errors];
+      _.push("Name length should be between 2 and 25 characters");
+      this.setState({
+        errors: _
+      });
+      n++;
+    }
+    if ( this.state.newImage.length < 4 ||  this.state.newImage.length > 255) {
+      let _ = [...this.state.errors];
+      _.push("Image name length should be between 4 and 255 characters without spaces");
+      this.setState({
+        errors: _
+      });
+      n++;
+    }
+    if ( this.state.newProfession.length < 5 ||  this.state.newName.length > 40) {
+      let _ = [...this.state.errors];
+      _.push("Profession length should be between 5 and 40 characters");
+      this.setState({
+        errors: _
+      });
+      n++;
+    }
+
+    if (n === 0) {
+      let cpy = [...this.state.contributors];
+      let o = {
+        id: Date.now(),
+        name: this.state.newName,
+        profession: this.state.newProfession,
+        avatar: this.state.newImage
+      };
+      cpy.push(o);
+      this.setState({
+        contributors: cpy
+      });
+      this.setState({
+        newName: '',
+        newProfession: '',
+        newImage: '',
+        errors: []
+      });
+    }
+    this.setState({
+      formSubmitted: true
+    });
+  }
+
   handleDeleteCollaborater(id) {
     let cpy = this.state.contributors.filter(c => {
       return c.id !== id
@@ -88,7 +166,17 @@ class Index extends Component {
           <h1 className="lead text-info">WeLoveDevs.com</h1>
           <p className=" pb-4 small text-muted">Meet the team</p>
 
-          
+          <AddForm
+            newName={this.state.newName}
+            newProfession={this.state.newProfession}
+            newImage={this.state.newImage}
+            handleAddContClick={this.handleAddContClick}
+            handleNameChange={this.handleNameChange}
+            handleProfessionChange={this.handleProfessionChange}
+            handleImageChange={this.handleImageChange}
+            formSubmitted={this.state.formSubmitted}
+            errors={this.state.errors}
+          />
 
           <hr />
         </div>
@@ -103,6 +191,54 @@ class Index extends Component {
   }
 }
 
+class AddForm extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render () {
+    return (
+        <form>
+          <p className="lead text-warning">Add new collaborater</p>
+          <div className="form-group">
+            <input
+            onChange={this.props.handleNameChange}
+            value={this.props.newName}
+             type="text" className="form-control" placeholder="Name" />            
+          </div>
+          <div className="form-group">
+            <input
+            onChange={this.props.handleProfessionChange}
+            value={this.props.newProfession} type="text" className="form-control" placeholder="Profession" />
+          </div>
+          <div className="form-group">
+            <input
+            onChange={this.props.handleImageChange}
+            value={this.props.newImage} type="text" className="form-control" placeholder="Image name. Ex : adel.png" />
+            <p className="text-muted small">Please note : It is assumed that employee images are stored on "https://welovedevs.com/images/"</p>
+          </div>
+          <div>
+            <button 
+            onClick={this.props.handleAddContClick}
+            className="btn btn-outline-dark">Add</button>
+          </div>
+          <div className={"alert alert-warning mt-2 " + (( this.props.formSubmitted && this.props.errors.length > 0) ? " " : "d-none") } role="alert">
+            <span>Please correct the following errors to continue :</span>
+            <ul>
+              {
+                this.props.errors.map(error => {
+                  return (
+                      <li key={error}>{error}</li>
+                    )
+                })
+              }
+            </ul>
+          </div>
+        </form>
+
+    )
+  }
+}
 
 class TeamList extends Component {
   constructor(props){
